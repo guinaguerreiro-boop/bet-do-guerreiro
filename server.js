@@ -118,6 +118,24 @@ app.get('/api/activities',auth,async(req,res)=>{
   const q=await pool.query('SELECT id,activity_name,points_awarded,created_at FROM activities WHERE player_id=$1 ORDER BY created_at DESC LIMIT 50',[req.user.sub]);
   res.json({activities:q.rows});
 });
+app.get('/api/leaderboard',async(_req,res)=>{
+  if(!requireConfig(res))return;
+  try{
+    const q=await pool.query(`
+      SELECT p.display_name,p.points,COUNT(a.id)::int AS activities_count
+      FROM players p
+      LEFT JOIN activities a ON a.player_id=p.id
+      GROUP BY p.id,p.display_name,p.points,p.created_at
+      ORDER BY p.points DESC,p.created_at ASC,p.id ASC
+      LIMIT 10
+    `);
+    res.set('Cache-Control','no-store');
+    res.json({players:q.rows.map((p,i)=>({position:i+1,display_name:p.display_name,points:p.points,activities_count:p.activities_count}))});
+  }catch(e){
+    console.error('leaderboard failed',e.message);
+    res.status(500).json({error:'Não foi possível carregar o ranking.'});
+  }
+});
 app.get('/api/admin/players',auth,async(req,res)=>{
   if(req.user.role!=='admin')return res.status(403).json({error:'Acesso restrito ao administrador.'});
   if(!requireConfig(res))return;
