@@ -107,5 +107,5 @@ document.querySelectorAll('.playBtn').forEach(b=>b.addEventListener('click',()=>
 $('exitGame').addEventListener('click',()=>{stopGameTimers();activeGame=null;$('gameStage').classList.add('hidden');location.hash='#arena'});
 
 $('logoutBtn').addEventListener('click',clearSession);$('refreshBtn').addEventListener('click',loadPanel);$('rankingRefresh').addEventListener('click',loadLeaderboard);
-(async()=>{try{const h=await fetch(API+'/health');const d=await h.json();message(d.database==='connected'?'API online e banco de dados conectado.':'API online, mas banco indisponível.');if(token){$('authForms').classList.add('hidden');$('signedIn').classList.remove('hidden');$('signedMessage').textContent='Sessão salva neste aparelho.';await loadPanel()}}catch{message('Não foi possível alcançar a API. Tente novamente em instantes.')}})();
+(async()=>{try{const h=await fetch(API+'/health');const d=await h.json();message(d.database==='connected'?'API online e banco de dados conectado.':'API online, mas banco indisponível.');await loadLeaderboard();if(token){$('authForms').classList.add('hidden');$('signedIn').classList.remove('hidden');$('signedMessage').textContent='Sessão salva neste aparelho.';await loadPanel()}}catch{message('Não foi possível alcançar a API. Tente novamente em instantes.')}})();
 </script></body></html>
