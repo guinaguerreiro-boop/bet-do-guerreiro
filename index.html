@@ -21,6 +21,15 @@
 .gameCard:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 14px 30px #0006}
 .arenaFootnote{font-size:12px;color:#aebed0;margin:14px 2px 0}
 @media(max-width:520px){.arenaShowcase{padding:18px}.gameCard{min-height:235px}}
+.leaderboardList{list-style:none;padding:0;margin:12px 0}
+.leaderboardList li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:8px 0;background:#091a30;border:1px solid #36516e;border-radius:10px}
+.leaderboardList li:first-child{border-color:var(--gold);background:linear-gradient(90deg,#49391d,#091a30)}
+.leaderboardPlayer{display:flex;align-items:center;gap:10px;min-width:0}
+.leaderboardPosition{color:var(--gold);font-weight:bold;min-width:28px}
+.leaderboardName{font-weight:bold;overflow-wrap:anywhere}
+.leaderboardMeta{display:block;color:var(--muted);font-size:12px}
+.leaderboardPoints{color:var(--gold);font-weight:bold;white-space:nowrap}
+
 </style></head><body>
 <header><h1>⚔️ BET DO GUERREIRO ⚔️</h1><div class="muted">Estratégia • Emoção • Espírito de campeão</div><nav><a href="#inicio">Início</a><a href="#arena">Arena</a><a href="#acesso">Cadastro / Login</a><a href="#painel">Meu painel</a></nav></header>
 <main>
@@ -39,6 +48,7 @@
 </div><p class="arenaFootnote">* Pontos e conquistas são demonstrativos. Esta plataforma não realiza apostas ou transações financeiras.</p></section>
 <section class="card hidden" id="gameStage" aria-live="polite"><div class="rowline"><span class="eyebrow">ARENA • DESAFIO ATIVO</span><button class="btn secondary" id="exitGame">Sair do desafio</button></div><h2 id="gameTitle">Desafio</h2><p class="muted" id="gameIntro"></p><div class="gameStats"><span id="gameProgress">Etapa 1</span><span id="gameScore">Pontos: 0</span><span id="gameClock"></span></div><div id="gameContent"></div><p class="status" id="gameFeedback" role="status"></p></section>
 <section class="card" id="painel"><h2>🛡️ Painel do Guerreiro</h2><h3 id="welcome">Entre para visualizar seu painel.</h3><div class="stats"><div class="stat">Pontos<strong id="points">—</strong></div><div class="stat">Atividades<strong id="games">—</strong></div><div class="stat">Patente<strong id="rank" style="font-size:18px">—</strong></div></div><div class="levelBox"><div class="rowline"><strong id="levelName">Nível 1 — Recruta</strong><strong id="levelPercent">0%</strong></div><div class="levelTrack" id="levelTrack" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="levelFill" id="levelFill"></div></div><div class="levelMeta"><span id="levelCurrent">0 pontos</span><span id="levelNext">Próximo nível: 50 pontos</span></div><p class="muted" id="levelMessage">Conclua desafios para evoluir seu guerreiro.</p></div><h3>Histórico</h3><ul id="history"><li>Faça login para carregar seu histórico.</li></ul><button class="btn secondary" id="refreshBtn">Atualizar painel</button></section>
+<section class="card" id="ranking"><div class="rowline"><div><span class="eyebrow">CLASSIFICAÇÃO GERAL</span><h2>🏆 Ranking dos Guerreiros</h2></div><button class="btn secondary" id="rankingRefresh">Atualizar ranking</button></div><p class="muted">Os dez jogadores com maior pontuação acumulada. Apenas nome de exibição, pontos e atividades concluídas são apresentados.</p><ol class="leaderboardList" id="leaderboardList"><li>Carregando classificação…</li></ol><p class="notice" id="leaderboardStatus" role="status" aria-live="polite">Pontuação demonstrativa, sem valor financeiro.</p></section>
 </main><footer>BET DO GUERREIRO © 2026<br>Plataforma demonstrativa • Sem transações financeiras reais</footer>
 <script>
 const API='https://bet-do-guerreiro-api.onrender.com';
@@ -52,7 +62,37 @@ function clearSession(){token='';localStorage.removeItem(TOKEN_KEY);$('authForms
 $('registerForm').addEventListener('submit',async e=>{e.preventDefault();message('Criando sua conta…');try{const data=await request('/api/auth/register',{method:'POST',body:JSON.stringify({name:$('regName').value.trim(),email:$('regEmail').value.trim(),password:$('regPassword').value})});$('registerForm').reset();setSession(data)}catch(err){message(err.message)}});
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();message('Verificando acesso…');try{const data=await request('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('loginEmail').value.trim(),password:$('loginPassword').value})});$('loginForm').reset();setSession(data)}catch(err){message(err.message)}});
 function updateLevel(rawPoints){const points=Math.max(0,Number(rawPoints)||0);const levels=[{name:'Recruta',min:0,max:50},{name:'Combatente',min:50,max:100},{name:'Veterano',min:100,max:200},{name:'Campeão',min:200,max:350},{name:'Lenda',min:350,max:500},{name:'Lenda Suprema',min:500,max:null}];let level=levels[0];for(const item of levels){if(points>=item.min)level=item;else break}const capped=level.max===null;const pct=capped?100:Math.max(0,Math.min(100,((points-level.min)/(level.max-level.min))*100));$('rank').textContent=level.name;$('levelName').textContent='Nível '+(levels.indexOf(level)+1)+' — '+level.name;$('levelPercent').textContent=Math.floor(pct)+'%';$('levelFill').style.width=pct+'%';$('levelTrack')?.setAttribute('aria-valuenow',String(Math.floor(pct)));$('levelCurrent').textContent=points+' pontos acumulados';$('levelNext').textContent=capped?'Nível máximo alcançado':'Próximo nível: '+level.max+' pontos';$('levelMessage').textContent=capped?'Você alcançou o topo da evolução!':(level.max-points)+' pontos para alcançar '+levels[levels.indexOf(level)+1].name+'.'}
-async function loadPanel(){if(!token)return;try{const [me,acts]=await Promise.all([request('/api/me'),request('/api/activities')]);const p=me.player;$('welcome').textContent='Bem-vindo, '+p.display_name+'!';$('points').textContent=p.points;$('games').textContent=acts.activities.length;updateLevel(p.points);const h=$('history');h.replaceChildren();if(!acts.activities.length){h.innerHTML='<li>Nenhuma atividade registrada ainda.</li>'}else acts.activities.forEach(a=>{const li=document.createElement('li');li.textContent=a.activity_name+' — +'+a.points_awarded+' pontos';h.append(li)})}catch(err){message(err.message);if(err.message.includes('Sessão'))clearSession()}}
+async function loadPanel(){if(!token)return;try{const [me,acts]=await Promise.all([request('/api/me'),request('/api/activities')]);const p=me.player;$('welcome').textContent='Bem-vindo, '+p.display_name+'!';$('points').textContent=p.points;$('games').textContent=acts.activities.length;updateLevel(p.points);const h=$('history');h.replaceChildren();if(!acts.activities.length){h.innerHTML='<li>Nenhuma atividade registrada ainda.</li>'}else acts.activities.forEach(a=>{const li=document.createElement('li');li.textContent=a.activity_name+' — +'+a.points_awarded+' pontos';h.append(li)})}catch(err){message(err.message);if(err.message.includes('Sessão'))clearSession()}await loadLeaderboard()}
+async function loadLeaderboard(){
+  const list=$('leaderboardList'),status=$('leaderboardStatus');
+  if(!list||!status)return;
+  status.textContent='Atualizando classificação…';
+  try{
+    const res=await fetch(API+'/api/leaderboard',{cache:'no-store'});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Ranking temporariamente indisponível.');
+    list.replaceChildren();
+    if(!data.players||!data.players.length){
+      const li=document.createElement('li');li.textContent='Ainda não há jogadores no ranking.';list.append(li);
+    }else{
+      data.players.forEach(p=>{
+        const li=document.createElement('li');
+        const identity=document.createElement('div');identity.className='leaderboardPlayer';
+        const position=document.createElement('span');position.className='leaderboardPosition';position.textContent=p.position===1?'🥇':p.position===2?'🥈':p.position===3?'🥉':'#'+p.position;
+        const nameWrap=document.createElement('div');
+        const name=document.createElement('span');name.className='leaderboardName';name.textContent=p.display_name;
+        const meta=document.createElement('span');meta.className='leaderboardMeta';meta.textContent=p.activities_count+' atividades concluídas';
+        nameWrap.append(name,meta);identity.append(position,nameWrap);
+        const points=document.createElement('strong');points.className='leaderboardPoints';points.textContent=p.points+' pts';
+        li.append(identity,points);list.append(li);
+      });
+    }
+    status.textContent='Ranking atualizado. Classificação baseada nos pontos acumulados.';
+  }catch(err){
+    list.replaceChildren();const li=document.createElement('li');li.textContent='Não foi possível carregar o ranking agora.';list.append(li);
+    status.textContent=err.message;
+  }
+}
 let activeGame=null,gameTimer=null,gameInterval=null;
 const questions={
 strategy:[{q:'Seu time está em vantagem e faltam poucos segundos. Qual decisão protege melhor o resultado?',a:['Atacar sem observar o espaço','Manter organização e controlar a posse','Abandonar a defesa'],c:1,why:'Organização e controle reduzem riscos.'},{q:'Um adversário repete sempre o mesmo movimento. O que fazer?',a:['Observar o padrão e antecipar a jogada','Ignorar o comportamento','Reagir sem pensar'],c:0,why:'Ler padrões ajuda a antecipar decisões.'},{q:'Você perdeu uma rodada. Qual é a melhor resposta?',a:['Desistir imediatamente','Repetir a mesma ação sem avaliar','Rever o erro e ajustar a estratégia'],c:2,why:'Aprender com o erro melhora a próxima decisão.'}],
@@ -66,6 +106,6 @@ async function finishGame(won,detail){if(!activeGame||activeGame.done)return;act
 document.querySelectorAll('.playBtn').forEach(b=>b.addEventListener('click',()=>startGame(b.dataset.game)));
 $('exitGame').addEventListener('click',()=>{stopGameTimers();activeGame=null;$('gameStage').classList.add('hidden');location.hash='#arena'});
 
-$('logoutBtn').addEventListener('click',clearSession);$('refreshBtn').addEventListener('click',loadPanel);
+$('logoutBtn').addEventListener('click',clearSession);$('refreshBtn').addEventListener('click',loadPanel);$('rankingRefresh').addEventListener('click',loadLeaderboard);
 (async()=>{try{const h=await fetch(API+'/health');const d=await h.json();message(d.database==='connected'?'API online e banco de dados conectado.':'API online, mas banco indisponível.');if(token){$('authForms').classList.add('hidden');$('signedIn').classList.remove('hidden');$('signedMessage').textContent='Sessão salva neste aparelho.';await loadPanel()}}catch{message('Não foi possível alcançar a API. Tente novamente em instantes.')}})();
 </script></body></html>
