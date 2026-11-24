@@ -11,7 +11,7 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(express.json({ limit: '20kb' }));
 const allowedOrigin = process.env.FRONTEND_ORIGIN || 'https://bet-do-guerreiro.onrender.com';
-app.use(cors({ origin: allowedOrigin.split(',').map(v => v.trim()), methods: ['GET','POST'], allowedHeaders: ['Content-Type','Authorization'] }));
+app.use(cors({ origin: allowedOrigin.split(',').map(v => v.trim()), methods: ['GET','POST','PUT'], allowedHeaders: ['Content-Type','Authorization'] }));
 app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: 'draft-7', legacyHeaders: false }));
 
 const pool = process.env.DATABASE_URL ? new Pool({
@@ -32,6 +32,7 @@ async function initializeDatabase() {
       password_hash TEXT NOT NULL,
       role VARCHAR(16) NOT NULL DEFAULT 'player' CHECK (role IN ('player','admin')),
       points INTEGER NOT NULL DEFAULT 0 CHECK (points >= 0),
+      mask_id VARCHAR(20) NOT NULL DEFAULT 'recruit' CHECK (mask_id IN ('recruit','shadow','guardian','warrior','legend')),
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
     CREATE TABLE IF NOT EXISTS activities (
@@ -43,7 +44,8 @@ async function initializeDatabase() {
     );
     CREATE INDEX IF NOT EXISTS activities_player_created_idx ON activities(player_id, created_at DESC);
   `);
-  console.log('PostgreSQL conectado; tabelas players e activities verificadas.');
+  await pool.query("ALTER TABLE players ADD COLUMN IF NOT EXISTS mask_id VARCHAR(20) NOT NULL DEFAULT 'recruit'");
+  console.log('PostgreSQL conectado; tabelas players, activities e avatar verificadas.');
 }
 function requireConfig(res) {
   if (!pool) { res.status(503).json({ error: 'Banco de dados ainda não configurado.' }); return false; }
@@ -95,9 +97,21 @@ app.post('/api/auth/login', async (req,res) => {
 });
 app.get('/api/me',auth,async(req,res)=>{
   if(!requireConfig(res))return;
-  const q=await pool.query('SELECT id,display_name,email,role,points,created_at FROM players WHERE id=$1',[req.user.sub]);
+  const q=await pool.query('SELECT id,display_name,email,role,points,mask_id,created_at FROM players WHERE id=$1',[req.user.sub]);
   if(!q.rowCount)return res.status(404).json({error:'Jogador não encontrado.'});
   res.json({player:q.rows[0]});
+});
+app.put('/api/me/mask',auth,async(req,res)=>{
+  if(!requireConfig(res))return;
+  const mask=String(req.body.mask_id||'');
+  const rules={recruit:{activities:0,points:0},shadow:{activities:1,points:0},guardian:{activities:3,points:0},warrior:{activities:0,points:100},legend:{activities:0,points:350}};
+  if(!Object.prototype.hasOwnProperty.call(rules,mask))return res.status(400).json({error:'Máscara inválida.'});
+  const q=await pool.query('SELECT p.points,COUNT(a.id)::int AS activities_count FROM players p LEFT JOIN activities a ON a.player_id=p.id WHERE p.id=$1 GROUP BY p.id,p.points',[req.user.sub]);
+  if(!q.rowCount)return res.status(404).json({error:'Jogador não encontrado.'});
+  const rule=rules[mask],player=q.rows[0];
+  if(player.activities_count<rule.activities||player.points<rule.points)return res.status(403).json({error:'Esta máscara ainda está bloqueada para seu progresso.'});
+  const saved=await pool.query('UPDATE players SET mask_id=$1 WHERE id=$2 RETURNING mask_id',[mask,req.user.sub]);
+  res.json({mask_id:saved.rows[0].mask_id});
 });
 app.post('/api/activities',auth,async(req,res)=>{
   if(!requireConfig(res))return;
@@ -122,7 +136,7 @@ app.get('/api/leaderboard',async(_req,res)=>{
   if(!requireConfig(res))return;
   try{
     const q=await pool.query(`
-      SELECT p.display_name,p.points,COUNT(a.id)::int AS activities_count
+      SELECT p.display_name,p.points,p.mask_id,COUNT(a.id)::int AS activities_count
       FROM players p
       LEFT JOIN activities a ON a.player_id=p.id
       GROUP BY p.id,p.display_name,p.points,p.created_at
@@ -130,7 +144,7 @@ app.get('/api/leaderboard',async(_req,res)=>{
       LIMIT 10
     `);
     res.set('Cache-Control','no-store');
-    res.json({players:q.rows.map((p,i)=>({position:i+1,display_name:p.display_name,points:p.points,activities_count:p.activities_count}))});
+    res.json({players:q.rows.map((p,i)=>({position:i+1,display_name:p.display_name,points:p.points,mask_id:p.mask_id,activities_count:p.activities_count}))});
   }catch(e){
     console.error('leaderboard failed',e.message);
     res.status(500).json({error:'Não foi possível carregar o ranking.'});
