@@ -30,6 +30,24 @@
 .leaderboardMeta{display:block;color:var(--muted);font-size:12px}
 .leaderboardPoints{color:var(--gold);font-weight:bold;white-space:nowrap}
 
+
+/* Camada Premium: navegação, conquistas e acabamento responsivo */
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+header{position:relative;overflow:hidden}
+header:after{content:"";display:block;width:min(180px,42vw);height:2px;margin:14px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+nav a{padding:8px 13px;border:1px solid #36516e;border-radius:999px;text-decoration:none;font-size:14px;font-weight:700;transition:.2s}
+nav a:hover,nav a:focus-visible{background:#243d5c;border-color:var(--gold);outline:none}
+.card,#arena{scroll-margin-top:16px}
+.card{box-shadow:0 12px 34px #0003}
+.achievementPanel{margin:22px 0;padding:18px;border:1px solid #8e713b;border-radius:16px;background:linear-gradient(135deg,#142b49,#091a30)}
+.achievementGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:12px}
+.achievement{padding:13px 11px;border:1px solid #36516e;border-radius:12px;background:#071426;min-height:112px}
+.achievement strong{display:block;color:#f4d58d;margin:5px 0 2px}
+.achievement span{font-size:12px;color:#c6d1df}
+.achievement .medal{font-size:24px}
+.achievement.locked{opacity:.52;filter:saturate(.35)}
+.premiumKicker{color:#f4d58d;letter-spacing:1.4px;font-size:11px;font-weight:700}
+@media(max-width:520px){header{padding:16px 12px}nav{gap:7px}nav a{padding:7px 10px;font-size:12px}.achievementPanel{padding:14px}}
 </style></head><body>
 <header><h1>⚔️ BET DO GUERREIRO ⚔️</h1><div class="muted">Estratégia • Emoção • Espírito de campeão</div><nav><a href="#inicio">Início</a><a href="#arena">Arena</a><a href="#acesso">Cadastro / Login</a><a href="#painel">Meu painel</a></nav></header>
 <main>
@@ -47,7 +65,7 @@
 <article class="gameCard"><span class="gameTag">03 • MISSÃO ESPECIAL</span><div class="gameIcon" aria-hidden="true">⚔️</div><h3>Missão</h3><p>Supere três etapas e prove sua capacidade de planejar e executar.</p><button class="btn playBtn" data-game="mission">Entrar no desafio</button></article>
 </div><p class="arenaFootnote">* Pontos e conquistas são demonstrativos. Esta plataforma não realiza apostas ou transações financeiras.</p></section>
 <section class="card hidden" id="gameStage" aria-live="polite"><div class="rowline"><span class="eyebrow">ARENA • DESAFIO ATIVO</span><button class="btn secondary" id="exitGame">Sair do desafio</button></div><h2 id="gameTitle">Desafio</h2><p class="muted" id="gameIntro"></p><div class="gameStats"><span id="gameProgress">Etapa 1</span><span id="gameScore">Pontos: 0</span><span id="gameClock"></span></div><div id="gameContent"></div><p class="status" id="gameFeedback" role="status"></p></section>
-<section class="card" id="painel"><h2>🛡️ Painel do Guerreiro</h2><h3 id="welcome">Entre para visualizar seu painel.</h3><div class="stats"><div class="stat">Pontos<strong id="points">—</strong></div><div class="stat">Atividades<strong id="games">—</strong></div><div class="stat">Patente<strong id="rank" style="font-size:18px">—</strong></div></div><div class="levelBox"><div class="rowline"><strong id="levelName">Nível 1 — Recruta</strong><strong id="levelPercent">0%</strong></div><div class="levelTrack" id="levelTrack" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="levelFill" id="levelFill"></div></div><div class="levelMeta"><span id="levelCurrent">0 pontos</span><span id="levelNext">Próximo nível: 50 pontos</span></div><p class="muted" id="levelMessage">Conclua desafios para evoluir seu guerreiro.</p></div><h3>Histórico</h3><ul id="history"><li>Faça login para carregar seu histórico.</li></ul><button class="btn secondary" id="refreshBtn">Atualizar painel</button></section>
+<section class="card" id="painel"><h2>🛡️ Painel do Guerreiro</h2><h3 id="welcome">Entre para visualizar seu painel.</h3><div class="stats"><div class="stat">Pontos<strong id="points">—</strong></div><div class="stat">Atividades<strong id="games">—</strong></div><div class="stat">Patente<strong id="rank" style="font-size:18px">—</strong></div></div><div class="levelBox"><div class="rowline"><strong id="levelName">Nível 1 — Recruta</strong><strong id="levelPercent">0%</strong></div><div class="levelTrack" id="levelTrack" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="levelFill" id="levelFill"></div></div><div class="levelMeta"><span id="levelCurrent">0 pontos</span><span id="levelNext">Próximo nível: 50 pontos</span></div><p class="muted" id="levelMessage">Conclua desafios para evoluir seu guerreiro.</p></div><section class="achievementPanel" aria-labelledby="achievementTitle"><span class="premiumKicker">PROGRESSO DO JOGADOR</span><h3 id="achievementTitle">🏅 Conquistas do Guerreiro</h3><p class="muted">Desbloqueie marcos conforme participa da Arena e acumula pontos.</p><div class="achievementGrid" id="achievementGrid"><div class="achievement locked"><span class="medal">🛡️</span><strong>Primeira vitória</strong><span>Conclua seu primeiro desafio.</span></div></div></section><h3>Histórico</h3><ul id="history"><li>Faça login para carregar seu histórico.</li></ul><button class="btn secondary" id="refreshBtn">Atualizar painel</button></section>
 <section class="card" id="ranking"><div class="rowline"><div><span class="eyebrow">CLASSIFICAÇÃO GERAL</span><h2>🏆 Ranking dos Guerreiros</h2></div><button class="btn secondary" id="rankingRefresh">Atualizar ranking</button></div><p class="muted">Os dez jogadores com maior pontuação acumulada. Apenas nome de exibição, pontos e atividades concluídas são apresentados.</p><ol class="leaderboardList" id="leaderboardList"><li>Carregando classificação…</li></ol><p class="notice" id="leaderboardStatus" role="status" aria-live="polite">Pontuação demonstrativa, sem valor financeiro.</p></section>
 </main><footer>BET DO GUERREIRO © 2026<br>Plataforma demonstrativa • Sem transações financeiras reais</footer>
 <script>
@@ -62,7 +80,27 @@ function clearSession(){token='';localStorage.removeItem(TOKEN_KEY);$('authForms
 $('registerForm').addEventListener('submit',async e=>{e.preventDefault();message('Criando sua conta…');try{const data=await request('/api/auth/register',{method:'POST',body:JSON.stringify({name:$('regName').value.trim(),email:$('regEmail').value.trim(),password:$('regPassword').value})});$('registerForm').reset();setSession(data)}catch(err){message(err.message)}});
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();message('Verificando acesso…');try{const data=await request('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('loginEmail').value.trim(),password:$('loginPassword').value})});$('loginForm').reset();setSession(data)}catch(err){message(err.message)}});
 function updateLevel(rawPoints){const points=Math.max(0,Number(rawPoints)||0);const levels=[{name:'Recruta',min:0,max:50},{name:'Combatente',min:50,max:100},{name:'Veterano',min:100,max:200},{name:'Campeão',min:200,max:350},{name:'Lenda',min:350,max:500},{name:'Lenda Suprema',min:500,max:null}];let level=levels[0];for(const item of levels){if(points>=item.min)level=item;else break}const capped=level.max===null;const pct=capped?100:Math.max(0,Math.min(100,((points-level.min)/(level.max-level.min))*100));$('rank').textContent=level.name;$('levelName').textContent='Nível '+(levels.indexOf(level)+1)+' — '+level.name;$('levelPercent').textContent=Math.floor(pct)+'%';$('levelFill').style.width=pct+'%';$('levelTrack')?.setAttribute('aria-valuenow',String(Math.floor(pct)));$('levelCurrent').textContent=points+' pontos acumulados';$('levelNext').textContent=capped?'Nível máximo alcançado':'Próximo nível: '+level.max+' pontos';$('levelMessage').textContent=capped?'Você alcançou o topo da evolução!':(level.max-points)+' pontos para alcançar '+levels[levels.indexOf(level)+1].name+'.'}
-async function loadPanel(){if(!token)return;try{const [me,acts]=await Promise.all([request('/api/me'),request('/api/activities')]);const p=me.player;$('welcome').textContent='Bem-vindo, '+p.display_name+'!';$('points').textContent=p.points;$('games').textContent=acts.activities.length;updateLevel(p.points);const h=$('history');h.replaceChildren();if(!acts.activities.length){h.innerHTML='<li>Nenhuma atividade registrada ainda.</li>'}else acts.activities.forEach(a=>{const li=document.createElement('li');li.textContent=a.activity_name+' — +'+a.points_awarded+' pontos';h.append(li)})}catch(err){message(err.message);if(err.message.includes('Sessão'))clearSession()}await loadLeaderboard()}
+function renderAchievements(activities,rawPoints){
+  const grid=$('achievementGrid');if(!grid)return;
+  const count=Array.isArray(activities)?activities.length:0;
+  const points=Math.max(0,Number(rawPoints)||0);
+  const items=[
+    {icon:'🛡️',name:'Primeira vitória',desc:'Conclua seu primeiro desafio.',unlocked:count>=1},
+    {icon:'⚔️',name:'Trinca de desafios',desc:'Registre três atividades concluídas.',unlocked:count>=3},
+    {icon:'🥇',name:'Guerreiro dedicado',desc:'Acumule 50 pontos.',unlocked:points>=50},
+    {icon:'🏆',name:'Veterano',desc:'Alcance 100 pontos.',unlocked:points>=100},
+    {icon:'👑',name:'Lenda',desc:'Alcance 350 pontos.',unlocked:points>=350}
+  ];
+  grid.replaceChildren();
+  items.forEach(item=>{
+    const card=document.createElement('div');card.className='achievement'+(item.unlocked?'':' locked');
+    const icon=document.createElement('span');icon.className='medal';icon.textContent=item.unlocked?item.icon:'🔒';
+    const name=document.createElement('strong');name.textContent=item.name;
+    const desc=document.createElement('span');desc.textContent=item.unlocked?'Conquista desbloqueada.':item.desc;
+    card.append(icon,name,desc);grid.append(card);
+  });
+}
+async function loadPanel(){if(!token)return;try{const [me,acts]=await Promise.all([request('/api/me'),request('/api/activities')]);const p=me.player;$('welcome').textContent='Bem-vindo, '+p.display_name+'!';$('points').textContent=p.points;$('games').textContent=acts.activities.length;updateLevel(p.points);renderAchievements(acts.activities,p.points);const h=$('history');h.replaceChildren();if(!acts.activities.length){h.innerHTML='<li>Nenhuma atividade registrada ainda.</li>'}else acts.activities.forEach(a=>{const li=document.createElement('li');li.textContent=a.activity_name+' — +'+a.points_awarded+' pontos';h.append(li)})}catch(err){message(err.message);if(err.message.includes('Sessão'))clearSession()}await loadLeaderboard()}
 async function loadLeaderboard(){
   const list=$('leaderboardList'),status=$('leaderboardStatus');
   if(!list||!status)return;
