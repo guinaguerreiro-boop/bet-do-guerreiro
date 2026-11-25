@@ -117,6 +117,67 @@ nav a:hover,nav a:focus-visible{background:#243d5c;border-color:var(--gold);outl
 /* Identidade visual de relíquias medievais em toda a Arena */
 .relicArt{width:54px;height:54px;display:inline-grid;place-items:center;vertical-align:middle;filter:drop-shadow(0 5px 5px #000b);flex:0 0 auto}.relicArt svg{width:100%;height:100%;overflow:visible}.quickGameCard .quickIcon{display:grid;place-items:center;width:76px;height:76px;border-radius:20px;background:radial-gradient(circle at 35% 20%,#42698b,#10243d 68%,#071426);border:1px solid #d9b45d;box-shadow:inset 0 2px 8px #fff4,0 7px 16px #0008}.quickGameCard .quickIcon .relicArt{width:64px;height:64px}.maskArt .relicArt{width:58px;height:58px}.maskPortrait .relicArt,.playerIdentityAvatar .relicArt{width:100%;height:100%;padding:3px}.achievement .medal .relicArt{width:46px;height:46px}.medalCoin .relicArt{width:48px;height:48px}
 .gameCard .gameIcon{width:76px;height:76px;border-radius:20px;background:radial-gradient(circle at 35% 20%,#42698b,#10243d 68%,#071426);box-shadow:inset 0 2px 8px #fff4,0 7px 16px #0008}.gameCard .gameIcon .relicArt{width:64px;height:64px}.progressMissionTop .missionEmblem{width:52px;height:52px;display:grid;place-items:center;border-radius:14px;background:radial-gradient(circle at 35% 20%,#42698b,#10243d 68%,#071426);border:1px solid #d9b45d;flex:0 0 52px}.progressMissionTop .missionEmblem .relicArt{width:46px;height:46px}
+
+/* PALETA VIVA — Arena BET DO GUERREIRO */
+:root{--gold:#f5ca63}
+.gameCard,.quickGameCard,.achievement,.medalAward,.progressMission,.maskOption{
+  position:relative;isolation:isolate;overflow:hidden;
+  border-color:#6683a8;
+  box-shadow:0 8px 22px #02081788,inset 0 1px 0 #ffffff20;
+}
+.gameCard:after,.quickGameCard:after,.achievement:after,.medalAward:after{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 88% 8%,#ffffff24,transparent 35%);
+}
+.gameCard:nth-child(3n+1),.quickGameCard:nth-child(3n+1){
+  background:linear-gradient(145deg,#174b76 0%,#12345b 48%,#101d3c 100%);
+  border-color:#42bde8;
+}
+.gameCard:nth-child(3n+2),.quickGameCard:nth-child(3n+2){
+  background:linear-gradient(145deg,#56316f 0%,#302552 52%,#171d3c 100%);
+  border-color:#c18aff;
+}
+.gameCard:nth-child(3n),.quickGameCard:nth-child(3n){
+  background:linear-gradient(145deg,#75401f 0%,#482b32 52%,#1b1d3c 100%);
+  border-color:#ffb45c;
+}
+.gameCard .gameIcon,.quickGameCard .quickIcon{
+  border:1px solid #ffffff80!important;
+  box-shadow:0 0 0 3px #ffffff12,0 8px 22px #0008,inset 0 0 18px #ffffff22;
+}
+.gameCard:nth-child(3n+1) .gameIcon,.quickGameCard:nth-child(3n+1) .quickIcon{background:radial-gradient(circle at 30% 20%,#6de4ff,#176aa0 48%,#14274f)!important}
+.gameCard:nth-child(3n+2) .gameIcon,.quickGameCard:nth-child(3n+2) .quickIcon{background:radial-gradient(circle at 30% 20%,#f0a7ff,#8548b6 48%,#25204d)!important}
+.gameCard:nth-child(3n) .gameIcon,.quickGameCard:nth-child(3n) .quickIcon{background:radial-gradient(circle at 30% 20%,#ffe28a,#df762c 48%,#552044)!important}
+.gameCard h3,.quickGameCard h3{color:#fff0b5;text-shadow:0 2px 10px #0009}
+.gameCard p,.quickGameCard p{color:#e5efff}
+.gameCard .gameTag{background:linear-gradient(90deg,#ffda78,#ff9f43);color:#28172a;border:0}
+.quickAction{background:linear-gradient(120deg,#ffe58a,#ffb347 45%,#e96b48)!important;border-color:#fff0b5!important;color:#24152b!important;box-shadow:0 5px 16px #0007,inset 0 1px 0 #fff9}
+.quickAction:hover:not(:disabled){filter:brightness(1.13) saturate(1.2);transform:translateY(-2px)}
+.runeWheel{
+ background:conic-gradient(#08b9df 0deg 45deg,#813ed1 45deg 90deg,#f05a45 90deg 135deg,#f6b832 135deg 180deg,#20b88a 180deg 225deg,#2f68d5 225deg 270deg,#bd4da8 270deg 315deg,#e8792d 315deg 360deg)!important;
+ border-color:#ffe08a!important;
+ box-shadow:0 0 0 5px #101b38,0 0 24px #39c9ff88,0 0 42px #e8a53b55,0 12px 28px #000b!important;
+}
+.runeWheel:before{border-color:#fff0b5!important}
+.runeWheelCenter{background:radial-gradient(circle at 30% 20%,#526eaa,#151d43 70%)!important;border-color:#ffe08a!important;box-shadow:0 0 18px #f7c95b99!important}
+.runeWheelPointer{color:#ffe28a!important;text-shadow:0 0 12px #ff9c32,0 2px 4px #000!important}
+.quickFeedback{background:linear-gradient(120deg,#173c69,#48265e 55%,#713d28)!important;border-color:#e9c36c!important;color:#fff4c7!important;box-shadow:0 0 20px #4bb7ff33}
+.achievement:nth-child(5n+1),.medalAward:nth-child(5n+1){background:linear-gradient(145deg,#15527a,#102746)!important;border-color:#48c8ef}
+.achievement:nth-child(5n+2),.medalAward:nth-child(5n+2){background:linear-gradient(145deg,#59377c,#211f49)!important;border-color:#c18aff}
+.achievement:nth-child(5n+3),.medalAward:nth-child(5n+3){background:linear-gradient(145deg,#75401f,#35203a)!important;border-color:#ffb45c}
+.achievement:nth-child(5n+4),.medalAward:nth-child(5n+4){background:linear-gradient(145deg,#17634e,#102c3c)!important;border-color:#56dfb0}
+.achievement:nth-child(5n),.medalAward:nth-child(5n){background:linear-gradient(145deg,#6c293f,#2b1e46)!important;border-color:#ff83a8}
+.achievement strong,.medalAward strong{color:#fff0b5}
+.progressMission:nth-child(odd){background:linear-gradient(100deg,#153e68,#17234a)!important;border-color:#43bce8}
+.progressMission:nth-child(even){background:linear-gradient(100deg,#462d68,#242044)!important;border-color:#c18aff}
+.progressMissionFill{background:linear-gradient(90deg,#22d3ee,#8b5cf6,#fbbf24)!important;box-shadow:0 0 12px #45c8ff88}
+.maskOption{background:linear-gradient(145deg,#233e68,#29204b)!important}
+.relicArt{filter:drop-shadow(0 0 5px #7de7ff88) drop-shadow(0 4px 5px #000b)}
+@media(prefers-reduced-motion:no-preference){
+ .gameCard,.quickGameCard,.achievement,.medalAward{transition:transform .22s ease,filter .22s ease,box-shadow .22s ease}
+ .gameCard:hover,.quickGameCard:hover,.achievement:hover,.medalAward:hover{transform:translateY(-4px);filter:saturate(1.2);box-shadow:0 12px 28px #000a,0 0 18px #48cfff44}
+}
+
 </style></head><body>
 <header><h1>⚔️ BET DO GUERREIRO ⚔️</h1><div class="muted">Estratégia • Emoção • Espírito de campeão</div><nav><a href="#inicio">Início</a><a href="#arena">Arena</a><a href="#acesso">Cadastro / Login</a><a href="#painel">Meu painel</a></nav></header>
 <main>
