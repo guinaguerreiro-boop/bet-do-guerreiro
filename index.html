@@ -178,6 +178,28 @@ nav a:hover,nav a:focus-visible{background:#243d5c;border-color:var(--gold);outl
  .gameCard:hover,.quickGameCard:hover,.achievement:hover,.medalAward:hover{transform:translateY(-4px);filter:saturate(1.2);box-shadow:0 12px 28px #000a,0 0 18px #48cfff44}
 }
 
+/* Portal inicial vibrante */
+body{background:radial-gradient(ellipse at 50% -12%,#254e83 0%,#101e3d 38%,#080f20 78%)!important}
+header{background:linear-gradient(100deg,#101b39,#173c67 42%,#38245c 72%,#14213e)!important;border-bottom:1px solid #f3c968;box-shadow:0 5px 28px #36bdf744}
+header h1{color:#ffe58a!important;text-shadow:0 0 8px #ffcf55,0 0 22px #e98c38}
+header nav a{padding:7px 12px;border:1px solid #ffffff35;border-radius:20px;background:#ffffff0d;color:#ffe5a0}
+.hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #f6cf70!important;background:radial-gradient(ellipse at 50% 0%,#426da8 0%,#283f78 42%,#321f59 78%,#10172f 100%)!important;box-shadow:0 0 0 3px #f4c45b20,0 12px 38px #0009,0 0 34px #36c8ff66!important}
+.hero:before{content:"";position:absolute;inset:-40%;z-index:-1;pointer-events:none;background:conic-gradient(from 0deg,transparent,#27d8ff33,transparent,#e77aff33,transparent,#ffce6233,transparent);animation:portalGlow 18s linear infinite}
+.hero .crest{position:relative;filter:drop-shadow(0 0 12px #ffdc75) drop-shadow(0 0 28px #42cfff);border:1px solid #f5d47b;box-shadow:0 0 0 5px #ffffff10,0 0 28px #d8a94c99;animation:crestPulse 3s ease-in-out infinite}
+.hero h2{color:#fff0a6!important;text-shadow:0 0 10px #ffc44d,0 0 24px #e47737,0 3px 5px #000;letter-spacing:1px}
+.hero p{color:#e4f3ff!important}
+.hero .btn,.btn:not(.secondary){background:linear-gradient(100deg,#fff09b,#ffc44f 28%,#ff8d43 62%,#e45c83)!important;color:#24152d!important;border:1px solid #fff1b8!important;box-shadow:0 0 0 3px #ffcf5830,0 6px 20px #ff8b3e66,inset 0 1px 0 #fff!important}
+#acesso{position:relative;overflow:hidden;border:1px solid #5ccfff!important;background:linear-gradient(135deg,#142f55,#252452 48%,#42264e)!important;box-shadow:0 0 0 3px #51cfff17,0 12px 32px #0008,0 0 26px #9b65ff55!important}
+#acesso:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 0 0,#25cfff30,transparent 38%),radial-gradient(circle at 100% 100%,#f28b5430,transparent 40%)}
+#acesso>*{position:relative}#acesso>h2{color:#ffe58a!important;text-shadow:0 0 12px #ffb84d}
+#acesso .grid>div{padding:16px;border-radius:14px;background:linear-gradient(145deg,#1b4770dd,#24214fdd);border:1px solid #73d5ff88;box-shadow:inset 0 1px 0 #ffffff20,0 8px 18px #0005}
+#acesso .grid>div:nth-child(2){background:linear-gradient(145deg,#4b2e70dd,#28204bdd);border-color:#d39aff}
+#acesso h3{color:#fff0ad;text-shadow:0 0 10px #ffce6a66}
+#acesso input{background:#09182c;border-color:#68c9ee;box-shadow:inset 0 2px 8px #0007}
+#acesso input:focus{outline:2px solid #f6c75f;box-shadow:0 0 0 4px #f6c75f33,0 0 18px #46d5ff66}
+@keyframes portalGlow{to{transform:rotate(360deg)}}@keyframes crestPulse{0%,100%{filter:drop-shadow(0 0 9px #ffdc75) drop-shadow(0 0 18px #42cfff66)}50%{filter:drop-shadow(0 0 15px #fff0a6) drop-shadow(0 0 32px #d77affaa)}}
+@media(prefers-reduced-motion:reduce){.hero:before,.hero .crest{animation:none}}
+@media(max-width:600px){.hero{padding:30px 14px}.hero .crest{width:min(170px,54vw)}header nav{gap:7px}header nav a{font-size:13px;padding:6px 9px}}
 </style></head><body>
 <header><h1>⚔️ BET DO GUERREIRO ⚔️</h1><div class="muted">Estratégia • Emoção • Espírito de campeão</div><nav><a href="#inicio">Início</a><a href="#arena">Arena</a><a href="#acesso">Cadastro / Login</a><a href="#painel">Meu painel</a></nav></header>
 <main>
