@@ -373,6 +373,75 @@ const questions={
 strategy:[{q:'Seu time está em vantagem e faltam poucos segundos. Qual decisão protege melhor o resultado?',a:['Atacar sem observar o espaço','Manter organização e controlar a posse','Abandonar a defesa'],c:1,why:'Organização e controle reduzem riscos.'},{q:'Um adversário repete sempre o mesmo movimento. O que fazer?',a:['Observar o padrão e antecipar a jogada','Ignorar o comportamento','Reagir sem pensar'],c:0,why:'Ler padrões ajuda a antecipar decisões.'},{q:'Você perdeu uma rodada. Qual é a melhor resposta?',a:['Desistir imediatamente','Repetir a mesma ação sem avaliar','Rever o erro e ajustar a estratégia'],c:2,why:'Aprender com o erro melhora a próxima decisão.'}],
 mission:[{q:'A trilha segura exige escolher o primeiro passo. Qual pista merece prioridade?',a:['O caminho sinalizado e iluminado','O atalho sem sinalização','A passagem bloqueada'],c:0,why:'Sinalização e segurança vêm primeiro.'},{q:'Você encontra um recurso limitado. Como deve usá-lo?',a:['Gastar tudo de uma vez','Reservar para a etapa necessária','Ignorar o objetivo'],c:1,why:'Planejar recursos é essencial.'},{q:'A equipe chegou ao objetivo. O que confirma uma missão bem concluída?',a:['Agir sem conferir','Verificar todas as etapas e o resultado','Encerrar antes da checagem'],c:1,why:'A conferência final valida a missão.'}]};
 function stopGameTimers(){if(gameTimer)clearTimeout(gameTimer);if(gameInterval)clearInterval(gameInterval);gameTimer=null;gameInterval=null}
+
+function showQuestion(){
+ if(!activeGame||activeGame.done)return;
+ const bank=questions[activeGame.kind]||questions.strategy;
+ const q=bank[activeGame.step];
+ if(!q){finishGame(activeGame.score>=2,'Você acertou '+activeGame.score+' de 3 etapas.');return}
+ $('gameProgress').textContent='Etapa '+(activeGame.step+1)+' de '+bank.length;
+ $('gameScore').textContent='Acertos: '+activeGame.score;
+ $('gameClock').textContent='Decisão tática';
+ const root=$('gameContent');root.replaceChildren();
+ const title=document.createElement('h3');title.textContent=q.q;root.append(title);
+ const choices=document.createElement('div');choices.className='questionChoices';
+ q.a.forEach((answer,index)=>{
+  const button=document.createElement('button');button.type='button';button.className='choice';button.textContent=answer;
+  button.addEventListener('click',()=>{
+   if(!activeGame||activeGame.done||button.disabled)return;
+   choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+   const correct=index===q.c;
+   if(correct){activeGame.score++;playGameSound('reveal')}
+   else playGameSound('miss');
+   $('gameScore').textContent='Acertos: '+activeGame.score;
+   $('gameFeedback').textContent=(correct?'Resposta correta! ':'Não foi dessa vez. ')+q.why;
+   const next=document.createElement('button');next.type='button';next.className='btn';next.textContent=activeGame.step===bank.length-1?'Ver resultado':'Próxima etapa';
+   next.addEventListener('click',()=>{
+    if(!activeGame||activeGame.done)return;
+    activeGame.step++;
+    if(activeGame.step>=bank.length)finishGame(activeGame.score>=2,'Você acertou '+activeGame.score+' de 3 etapas. '+(activeGame.score>=2?'Excelente desempenho!':'Continue treinando para dominar o desafio.'));
+    else showQuestion();
+   });
+   root.append(next);
+  });
+  choices.append(button);
+ });
+ root.append(choices);animateGameContent();
+}
+function startPrecision(){
+ const root=$('gameContent');root.innerHTML='<p>Toque em cinco alvos antes que o tempo termine. Cada acerto conta para sua pontuação.</p><div class="target-area" id="precisionArea"><button type="button" class="target" id="precisionTarget" aria-label="Acertar alvo">🎯</button></div>';
+ animateGameContent();
+ activeGame.hits=0;
+ let remaining=20;
+ $('gameProgress').textContent='Alvos: 0 / 5';
+ $('gameScore').textContent='Acertos: 0';
+ $('gameClock').textContent='20 s';
+ $('gameFeedback').textContent='Prepare o reflexo e acerte os cinco alvos!';
+ const area=$('precisionArea'),target=$('precisionTarget');
+ const moveTarget=()=>{
+  const maxX=Math.max(0,area.clientWidth-target.offsetWidth-12);
+  const maxY=Math.max(0,area.clientHeight-target.offsetHeight-12);
+  target.style.left=(6+Math.random()*maxX)+'px';
+  target.style.top=(6+Math.random()*maxY)+'px';
+ };
+ moveTarget();
+ target.addEventListener('click',()=>{
+  if(!activeGame||activeGame.done)return;
+  activeGame.hits++;
+  $('gameProgress').textContent='Alvos: '+activeGame.hits+' / 5';
+  $('gameScore').textContent='Acertos: '+activeGame.hits;
+  playGameSound('reveal');
+  if(activeGame.hits>=5){finishGame(true,'Você acertou os cinco alvos dentro do tempo!');return}
+  $('gameFeedback').textContent='Boa! Faltam '+(5-activeGame.hits)+' alvos.';
+  moveTarget();
+ });
+ gameInterval=setInterval(()=>{
+  if(!activeGame||activeGame.done){stopGameTimers();return}
+  remaining--;
+  $('gameClock').textContent=remaining+' s';
+  if(remaining<=0)finishGame(false,'Tempo esgotado. Você acertou '+activeGame.hits+' de 5 alvos.');
+ },1000);
+}
 function startGame(kind){if(!token){message('Faça cadastro ou login antes de participar.');location.hash='#acesso';return}stopGameTimers();activeGame={kind,step:0,score:0,hits:0,done:false};const stage=$('gameStage');stage.classList.remove('hidden');$('gameFeedback').textContent='Boa sorte, guerreiro!';$('gameTitle').textContent=kind==='strategy'?'♟️ Desafio de Estratégia':kind==='precision'?'🎯 Desafio de Precisão':'⚔️ Missão do Guerreiro';$('gameIntro').textContent=kind==='precision'?'Acerte cinco alvos. Você tem 20 segundos.':kind==='strategy'?'Responda às três situações táticas.':'Escolha a melhor decisão em cada etapa da missão.';if(kind==='precision')startPrecision();else showQuestion();requestAnimationFrame(()=>stage.scrollIntoView({behavior:'smooth',block:'start'}))}
 const SOUND_KEY='bdg_sound_enabled';
 let soundContext=null;
